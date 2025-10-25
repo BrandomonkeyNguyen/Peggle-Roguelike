@@ -20,11 +20,6 @@ func _ready():
 	last_position_stuck = global_position
 
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(_delta):
-	pass
-
-
 func _physics_process(_delta):
 	movement_direction = last_position.direction_to(global_position)
 	last_position = global_position

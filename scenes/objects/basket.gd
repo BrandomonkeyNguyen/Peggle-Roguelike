@@ -12,7 +12,6 @@ func _on_body_entered(body):
 	if body.is_in_group("ball"):
 		entered = true
 
-
 # Basket Functions
 func add_money():
-	params.ogNode.money += params.value
+	params.ogNode.moneyEarned += params.value

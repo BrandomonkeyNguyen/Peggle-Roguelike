@@ -1,13 +1,10 @@
-[gd_scene load_steps=14 format=3 uid="uid://cwdubov25slj5"]
+[gd_scene load_steps=13 format=3 uid="uid://cwdubov25slj5"]
 
 [ext_resource type="Script" path="res://scenes/main.gd" id="1_wsmuf"]
 [ext_resource type="AudioStream" uid="uid://blgcborusdy58" path="res://assets/audio/Hooray Sound Effect.mp3" id="2_xft5e"]
 [ext_resource type="Texture2D" uid="uid://ci8wagxhf7sui" path="res://assets/sprites/brickTexture.png" id="3_2h4vr"]
 [ext_resource type="Texture2D" uid="uid://c7vuxscm3j5rx" path="res://assets/sprites/steelTexture.webp" id="4_3got4"]
 [ext_resource type="Texture2D" uid="uid://btbagaoev3le5" path="res://assets/sprites/icon.svg" id="5_xgv7e"]
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_ub2se"]
-size = Vector2(1080, 24)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_aieg1"]
 size = Vector2(1080, 16)
@@ -38,13 +35,6 @@ script = ExtResource("1_wsmuf")
 [node name="SoundPlayer" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("2_xft5e")
 volume_db = -21.549
-
-[node name="Resetter" type="Area2D" parent="."]
-position = Vector2(648, 1072)
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Resetter"]
-position = Vector2(312, -4)
-shape = SubResource("RectangleShape2D_ub2se")
 
 [node name="TopBorder" type="StaticBody2D" parent="."]
 
@@ -192,6 +182,5 @@ label_settings = SubResource("LabelSettings_03flg")
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[connection signal="body_entered" from="Resetter" to="." method="_on_resetter_body_entered"]
 [connection signal="input_event" from="ButtonRight/Area2D" to="." method="_on_input_event_right"]
 [connection signal="input_event" from="ButtonLeft/Area2D" to="." method="_on_input_event_left"]

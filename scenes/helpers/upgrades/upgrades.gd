@@ -9,7 +9,7 @@ static var upgrade_data_file = "res://assets/data/upgrades.json"
 static var upgrade_data_json = FileAccess.get_file_as_string(upgrade_data_file)
 static var upgradeOptions = JSON.parse_string(upgrade_data_json)
 
-static func set_options(menu, weights):
+static func set_options(menu, weights: Array = [5,4,3,2,1]):
 	var currentOptions = []
 	while currentOptions.size() < 3:
 		var rarity = general.weighted_random(weights)
@@ -35,42 +35,40 @@ static func make_shape(shape_type: String, scale: float = 1.0) -> Shape2D:
 			return r
 	return null
 
-static func select(ogNode: Node2D, function: String, params: Dictionary, shape: Shape2D):
+static func select(gameBoard: GameBoard, function: String, params: Dictionary, shape: Shape2D):
 	var selector = selectorScene.instantiate()
-	selector.ogNode = ogNode
+	selector.gameBoard = gameBoard
 	selector.function = Callable(selector, function)
 	selector.params = params
 	selector.get_child(0).shape = shape
-	ogNode.add_child(selector)
-	ogNode.selector = selector
-	ogNode.selecting = true
-
+	gameBoard.add_child(selector)
+	gameBoard.selector = selector
 
 # Upgrade Functions
-static func add_value(ogNode: Node2D, params: Dictionary = {}):
+static func add_value(gameBoard: GameBoard, params: Dictionary = {}):
 	var shape = make_shape(params.shape, params.scale)
 	if shape:
-		select(ogNode, "add_money", {"value": params.value}, shape)
+		select(gameBoard, "add_money", {"value": params.value}, shape)
 
-static func remove(ogNode: Node2D, params: Dictionary = {}):
+static func remove(gameBoard: GameBoard, params: Dictionary = {}):
 	var shape = make_shape(params.shape, params.scale)
 	if shape:
-		select(ogNode, "remove_pegs", {}, shape)
+		select(gameBoard, "remove_pegs", {}, shape)
 
-static func add_bumper(ogNode: Node2D, params: Dictionary = {}):
+static func add_bumper(gameBoard: GameBoard, params: Dictionary = {}):
 	var shape = make_shape(params.shape, params.scale)
 	if shape:
-		select(ogNode, "add_bumper", {}, shape)
+		select(gameBoard, "add_bumper", {}, shape)
 
-static func silver_bullet(ogNode: Node2D, _params: Dictionary = {}):
-	ogNode.inventory.append("Silver Bullet")
+static func silver_bullet(gameBoard: GameBoard, _params: Dictionary = {}):
+	gameBoard.inventory.append("Silver Bullet")
 
-static func change_size(ogNode: Node2D, params: Dictionary = {}):
+static func change_size(gameBoard: GameBoard, params: Dictionary = {}):
 	var shape = make_shape(params.shape, params.scale)
 	if shape:
-		select(ogNode, "change_size", {"value": params.value}, shape)
+		select(gameBoard, "change_size", {"value": params.value}, shape)
 
-static func add_flipper(ogNode: Node2D, params: Dictionary = {}):
+static func add_flipper(gameBoard: GameBoard, params: Dictionary = {}):
 	var shape = make_shape(params.shape, params.scale)
 	if shape:
-		select(ogNode, "add_flipper", {"side": params.side}, shape)
+		select(gameBoard, "add_flipper", {"side": params.side}, shape)

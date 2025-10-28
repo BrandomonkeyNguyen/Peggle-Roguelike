@@ -14,4 +14,4 @@ func _on_body_entered(body):
 
 # Basket Functions
 func add_money():
-	params.ogNode.moneyEarned += params.value
+	params.gameBoard.stage.moneyEarned += params.value

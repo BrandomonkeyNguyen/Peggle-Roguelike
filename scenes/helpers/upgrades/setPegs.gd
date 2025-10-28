@@ -22,25 +22,25 @@ static func set_options(menu):
 
 
 # Helpers
-static func get_viewport_size(ogNode):
-	return ogNode.gameplay_viewport
+static func get_viewport_size(gameBoard):
+	return gameBoard.gameplay_viewport
 
 
 # Set Pegs Functions
-static func set_grid(ogNode):
-	var viewport = get_viewport_size(ogNode)
+static func set_grid(gameBoard):
+	var viewport = get_viewport_size(gameBoard)
 	var i = -4.5
 	while i < 5:
 		var x = viewport.x / 11 * i + (viewport.x/2 + viewport.left)
 		var j = -4.5
 		while j < 5:
 			var y = viewport.y / 11 * j + (viewport.y/2 + viewport.top)
-			ogNode.gameBoard.add_coll_object(Vector2(x,y), collScene, "Circle Peg")
+			gameBoard.add_coll_object(Vector2(x,y), collScene, "Circle Peg")
 			j += 1
 		i += 1
 
-static func set_grid_offset(ogNode):
-	var viewport = get_viewport_size(ogNode)
+static func set_grid_offset(gameBoard):
+	var viewport = get_viewport_size(gameBoard)
 	var i = -4.5
 	while i < 5:
 		var j = -4.5
@@ -51,20 +51,20 @@ static func set_grid_offset(ogNode):
 				x += (viewport.x/11/4)
 			else:
 				x -= (viewport.x/11/4)
-			ogNode.gameBoard.add_coll_object(Vector2(x,y), collScene, "Circle Peg")
+			gameBoard.add_coll_object(Vector2(x,y), collScene, "Circle Peg")
 			j += 1
 		i += 1
 
-static func set_circles(ogNode):
-	var viewport = get_viewport_size(ogNode)
+static func set_circles(gameBoard):
+	var viewport = get_viewport_size(gameBoard)
 	for i in range(1,21):
 		for j in range(1,6):
 			var x = cos(2 * PI / 20 * i) * (viewport.x / 11 * j) + (viewport.x/2 + viewport.left)
 			var y = sin(2 * PI / 20 * i) * (viewport.y / 10 * j) + (viewport.y/2 + viewport.top)
-			ogNode.gameBoard.add_coll_object(Vector2(x,y), collScene, "Circle Peg")
+			gameBoard.add_coll_object(Vector2(x,y), collScene, "Circle Peg")
 
-static func set_triangles(ogNode):
-	var viewport = get_viewport_size(ogNode)
+static func set_triangles(gameBoard):
+	var viewport = get_viewport_size(gameBoard)
 	var base_width = viewport.x  # Width of the widest (last) row
 	var center_x = viewport.left + viewport.x / 2
 	var start_y = viewport.top + viewport.y
@@ -77,11 +77,11 @@ static func set_triangles(ogNode):
 		for j in range(num_pegs):
 			var x = x_start + (row_width / (num_pegs - 1)) * j if num_pegs > 1 else center_x
 			var y = start_y - row_height * (i - 1)
-			ogNode.gameBoard.add_coll_object(Vector2(x, y), collScene, "Circle Peg")
+			gameBoard.add_coll_object(Vector2(x, y), collScene, "Circle Peg")
 
 
-static func set_tapered(ogNode):
-	var viewport = get_viewport_size(ogNode)
+static func set_tapered(gameBoard):
+	var viewport = get_viewport_size(gameBoard)
 	var center_x = viewport.x / 2 + viewport.left
 	var start_y = viewport.top + viewport.y
 	var row_height = viewport.y / 15
@@ -91,4 +91,4 @@ static func set_tapered(ogNode):
 		for j in range(1, i + 1):
 			var x = left + (row_width / (i + 1)) * j
 			var y = start_y - row_height * i
-			ogNode.gameBoard.add_coll_object(Vector2(x, y), collScene, "Circle Peg")
+			gameBoard.add_coll_object(Vector2(x, y), collScene, "Circle Peg")

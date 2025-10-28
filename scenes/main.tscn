@@ -1,6 +1,6 @@
 [gd_scene load_steps=13 format=3 uid="uid://cwdubov25slj5"]
 
-[ext_resource type="Script" path="res://scenes/main.gd" id="1_wsmuf"]
+[ext_resource type="Script" uid="uid://cpqt06objp3w0" path="res://scenes/main.gd" id="1_wsmuf"]
 [ext_resource type="AudioStream" uid="uid://blgcborusdy58" path="res://assets/audio/Hooray Sound Effect.mp3" id="2_xft5e"]
 [ext_resource type="Texture2D" uid="uid://ci8wagxhf7sui" path="res://assets/sprites/brickTexture.png" id="3_2h4vr"]
 [ext_resource type="Texture2D" uid="uid://c7vuxscm3j5rx" path="res://assets/sprites/steelTexture.webp" id="4_3got4"]

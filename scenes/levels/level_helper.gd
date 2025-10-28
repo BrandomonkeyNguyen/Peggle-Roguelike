@@ -1,27 +1,26 @@
 extends Node
 class_name LevelHelper
 
-static func level_handler(ogNode, handleType):
-	for character in ogNode.levelCharacters:
+static func level_handler(gameBoard: GameBoard, handleType: String):
+	for character in gameBoard.stage.levelCharacters:
 		if character.has(handleType):
 			var newFunction = Callable(LevelHelper,character[handleType])
-			newFunction.call(ogNode)
+			newFunction.call(gameBoard)
 
-static func dracula(ogNode):
-	var objsHit = ogNode.ball.all_touched
+static func dracula(gameBoard: GameBoard):
+	var objsHit = gameBoard.ball.all_touched
 	for obj in objsHit:
 		obj.functions = []
 		obj.set_color(Color.RED)
 		obj.sound = obj.get_node("boingSound")
 
-static func frankenstein(ogNode):
+static func frankenstein(gameBoard: GameBoard):
 	var ticks = Time.get_ticks_msec()
 	if ticks % 3000 == 0:
-		ogNode.money -= 5 
-		ogNode.play_sound("res://assets/audio/nickBoing.mp3")
+		gameBoard.money -= 5
 
-static func place_silver_bullet(ogNode):
-	var allObjs = ogNode.objArr
+static func place_silver_bullet(gameBoard: GameBoard):
+	var allObjs = gameBoard.objArr
 	var selection = allObjs[randi() % allObjs.size()]
 	var new_function = {
 		"func": Callable(selection,"silver_bullet"),
@@ -31,13 +30,13 @@ static func place_silver_bullet(ogNode):
 	selection.functions.append(new_function)
 	selection.set_color(Color.SILVER)
 
-static func werewolf(ogNode):
-	if "Silver Bullet" not in ogNode.inventory:
-		ogNode.do_game_over()
+static func werewolf(gameBoard):
+	if "Silver Bullet" not in gameBoard.inventory:
+		gameBoard.gameOver = true
 	else:
-		ogNode.inventory.erase("Silver Bullet")
+		gameBoard.inventory.erase("Silver Bullet")
 
-static func ghost(ogNode):
+static func ghost(gameBoard: GameBoard):
 	var color_rect := ColorRect.new()
 	color_rect.color = Color.BLACK
 	color_rect.name = "DarknessOverlay"
@@ -66,21 +65,21 @@ static func ghost(ogNode):
 	var shader_material := ShaderMaterial.new()
 	shader_material.shader = shader
 	color_rect.material = shader_material
-	ogNode.add_child(color_rect)
+	gameBoard.add_child(color_rect)
 
-static func ghost_light(ogNode):
-	var overlay = ogNode.get_node("DarknessOverlay")
+static func ghost_light(gameBoard: GameBoard):
+	var overlay = gameBoard.get_node("DarknessOverlay")
 	if overlay:
 		var shader_material = overlay.material as ShaderMaterial
-		var screen_pos = ogNode.ball.global_position
+		var screen_pos = gameBoard.ball.global_position
 		shader_material.set_shader_parameter("light_center", screen_pos)
 
-static func reset_ghost(ogNode):
-	var overlay = ogNode.get_node("DarknessOverlay")
+static func reset_ghost(gameBoard: GameBoard):
+	var overlay = gameBoard.get_node("DarknessOverlay")
 	overlay.free()
 
-static func giraffe(ogNode: Main):
-	var pegs = ogNode.get("objArr")
+static func giraffe(gameBoard: GameBoard):
+	var pegs = gameBoard.get("objArr")
 	for peg in pegs:
 		if randi() % 10 == 0:
 			var new_function = {
@@ -91,8 +90,8 @@ static func giraffe(ogNode: Main):
 			peg.get("functions").append(new_function)
 			peg.set_color(Color.MEDIUM_PURPLE)
 
-static func elephant(ogNode: Main):
-	var pegs = ogNode.get("objArr")
+static func elephant(gameBoard: GameBoard):
+	var pegs = gameBoard.get("objArr")
 	for peg in pegs:
 		if randi() % 10 == 0:
 			var new_function = {
@@ -103,9 +102,9 @@ static func elephant(ogNode: Main):
 			peg.get("functions").append(new_function)
 			peg.set_color(Color.MEDIUM_PURPLE)
 
-static func monkey1(ogNode: Main):
-	ogNode.state = {"monkey_combo_active": false, "monkey_combo_count": 0, "monkey_last_hit": Time.get_ticks_msec()}
-	var pegs = ogNode.get("objArr")
+static func monkey1(gameBoard: GameBoard):
+	gameBoard.state = {"monkey_combo_active": false, "monkey_combo_count": 0, "monkey_last_hit": Time.get_ticks_msec()}
+	var pegs = gameBoard.get("objArr")
 	for peg in pegs:
 		if randi() % 5 == 0:
 			var new_function = {
@@ -116,10 +115,10 @@ static func monkey1(ogNode: Main):
 			peg.get("functions").append(new_function)
 			peg.set_color(Color.MEDIUM_PURPLE)
 
-static func reset_monkey1(ogNode: Main):
-	ogNode.state.erase("monkey_combo_count")
-	ogNode.state.erase("monkey_last_hit")
-	for peg in ogNode.objArr:
+static func reset_monkey1(gameBoard: GameBoard):
+	gameBoard.state.erase("monkey_combo_count")
+	gameBoard.state.erase("monkey_last_hit")
+	for peg in gameBoard.objArr:
 		for function in peg.functions:
 			if function.func == Callable(peg, "monkey1"):
 				peg.functions.erase(function) 

@@ -5,7 +5,7 @@ const collScene = preload("res://scenes/objects/collisionObjects/collision_objec
 @onready var shape = $Shape.shape
 const normal_scale = 64
 
-var ogNode: Node2D
+var gameBoard: GameBoard
 var function: Callable
 var params: Dictionary
 var value: int
@@ -78,7 +78,7 @@ func add_bumper(pegs: Array) -> bool:
 		"text": "Bump Ball",
 		"params": {}
 	}
-	var newObj = ogNode.add_coll_object(global_position, collScene, "Circle Peg", new_function)
+	var newObj = gameBoard.add_coll_object(global_position, collScene, "Circle Peg", new_function)
 	newObj.scale = Vector2(1.5, 1.5)
 	return true
 
@@ -98,10 +98,10 @@ func add_flipper(pegs: Array) -> bool:
 		"trigger": params.side + "_button",
 		"params": {"direction": params.side}
 	}
-	var newObj = ogNode.add_coll_object(global_position, collScene, "Flipper", new_function)
+	var newObj = gameBoard.add_coll_object(global_position, collScene, "Flipper", new_function)
 	if params.side == "right":
-		ogNode.rightButtonTriggers.append(newObj)
+		gameBoard.rightButtonTriggers.append(newObj)
 	elif params.side == "left":
 		newObj.scale = Vector2(-1,1)
-		ogNode.leftButtonTriggers.append(newObj)
+		gameBoard.leftButtonTriggers.append(newObj)
 	return true

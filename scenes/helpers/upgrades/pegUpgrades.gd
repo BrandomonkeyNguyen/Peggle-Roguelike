@@ -1,5 +1,7 @@
 extends Node
 
+# NOT IN USE 
+
 const general = preload("res://scenes/helpers/general.gd")
 const selectorScene = preload("res://scenes/objects/selector.tscn")
 const upgradeOptions = [
@@ -46,12 +48,13 @@ static func set_options(menu, weights):
 	return currentOptions
 
 static func select_pegs(ogNode, function, value, shape):
+	print("selecting")
 	var selector = selectorScene.instantiate()
-	selector.ogNode = ogNode
+	selector.gameBoard = ogNode.gameBoard
 	selector.set_function(function, value)
 	selector.get_child(0).shape = shape
-	ogNode.add_child(selector)
-	ogNode.selector = selector
+	ogNode.gameBoard.add_child(selector)
+	ogNode.gameBoard.selector = selector
 	ogNode.selecting = true
 
 static func run_peg_function(ball, peg):

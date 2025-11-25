@@ -7,9 +7,13 @@ const boardScene = preload("res://scenes/game_board.tscn")
 const menuScene = preload("res://scenes/menus/menu.tscn")
 const musicScene = preload("res://scenes/helpers/music_player.tscn")
 
+const collScene = preload("res://scenes/objects/collisionObjects/collision_object.tscn")
+const basketScene = preload("res://scenes/objects/basket.tscn")
+
 var gameBoard: GameBoard
 var stage: Stage
 
+var turnCount = 0
 var money = 1 
 var dropCost = 1
 
@@ -36,11 +40,17 @@ func _ready():
 	add_child(music)
 	add_child(menu)
 	
-	currentOptions = SetPegs.set_options(menu) # Set up initial menu options
-	menu.function = Callable(menu, "randomize_pegs")
-	menu.params = {"objArr": gameBoard.objArr}
+	if load_game() == false:
+		currentOptions = SetPegs.set_options(menu) # Set up initial menu options
+		menu.function = Callable(menu, "randomize_pegs")
+		menu.params = {"objArr": gameBoard.objArr}
+		
+		stage.turnsToNextLevel = Levels.check_level(stage.turnsToNextLevel) # Set up initial level state
+		
+		gameBoard.add_basket("Gain $10", "add_money", {"value": 10})
+	else:
+		currentOptions = upgrades.set_options(menu) # Set up next menu options
 	
-	stage.turnsToNextLevel = Levels.check_level(stage.turnsToNextLevel) # Set up initial level state
 	$Level.text = "Next level in " + str(stage.turnsToNextLevel) + " levels"
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -51,13 +61,13 @@ func _process(_delta):
 		$Money.text = "Bank Account: $" + str(money)
 		$MoneyEarned.text = "Money Earned: $" + str(stage.moneyEarned)
 		$DropCost.text = "Cost to Drop: $" + str(dropCost)
-
+		
 		var inventoryText = "" # Maintain Inventory labels
 		for item in gameBoard.inventory:
 			inventoryText += "* " + item + "\n"
 		$Inventory.text = inventoryText
 		
-		if gameBoard.selector: # Handle if player is using selector
+		if gameBoard.selector and selecting == true: # Handle if player is using selector
 			selecting = gameBoard.handle_selecting()
 		
 		elif menuOpen: # Handle if player is using menu
@@ -72,6 +82,7 @@ func _process(_delta):
 					menu.function.call()
 				menu.free()
 				menuOpen = false
+				selecting = true
 		
 		else: # Handle if game is in play\
 			if stage.ballDropped: # Handle if ball was just dropped
@@ -88,6 +99,8 @@ func _process(_delta):
 			
 				if not gameOver and not gameBoard.gameOver: # Handle what to do in the next stage
 					play_sound("res://assets/audio/Hooray Sound Effect.mp3") # Play success sound
+					turnCount = turnCount + 1
+					save_high_scores()
 					
 					var newStage = Stage.new() # Reset variables for next stage
 					menu = menuScene.instantiate()
@@ -126,7 +139,16 @@ func _process(_delta):
 			elif gameBoard.ball: # Handle if ball is still in play
 				gameBoard.handle_gameplay() 
 
+func _input(event):
+	if event.is_action_pressed("ui_cancel"):
+		save_game()
+		get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
+
 func do_game_over():
+	var file = FileAccess.open("user://save_data.json", FileAccess.WRITE) # Empty out save file
+	file.store_string("") 
+	file.close()
+	
 	music.stop_all()
 	$GameOver.visible = true
 	stage = Stage.new()
@@ -136,6 +158,113 @@ func play_sound(path: String):
 	$SoundPlayer.stream = sound_stream
 	$SoundPlayer.play()
 
+func save_high_scores():
+	var high_score_file = "user://high_scores.json"
+	var result = {}
+	
+	if not FileAccess.file_exists(high_score_file):
+		result = {"money": money, "turns": turnCount}
+		print("No save file found.")
+	else:
+		var read_file = FileAccess.open(high_score_file, FileAccess.READ)
+		var read_json_string = read_file.get_as_text()
+		read_file.close()
+		
+		result = JSON.parse_string(read_json_string)
+		
+		if result is Dictionary:
+			if result.money < money:
+				result.money = money
+			if result.turnCount < turnCount:
+				result.turnCount = turnCount
+		else: 
+			result = {"money": money, "turns": turnCount}
+	
+	var file = FileAccess.open(high_score_file, FileAccess.WRITE)
+	var json_string = JSON.stringify(result)
+	
+	if file:
+		file.store_string(json_string)
+		file.close()
+		print("Saved game data to: ", high_score_file)
+	else:
+		print("Failed to save file!")
+
+func save_game():
+	var save_file = "user://save_data.json"
+	
+	var save_data = {
+		"money": money,
+		"dropCost": dropCost,
+		"turnCount": turnCount,
+		"turnsToNextLevel": stage.turnsToNextLevel,
+		"objArr": [],
+		"basketArr": [],
+		"inventory": gameBoard.inventory
+	}
+	
+	for obj in gameBoard.objArr:
+		var newObj = {
+			"objectName": obj.objectName,
+			"position": {"x": obj.position.x, "y": obj.position.y},
+			"color": obj.object.color.to_html(),
+			"sound": obj.sound.name,
+			"functions": []
+		}
+		for function in obj.functions:
+			function.func = function.func.get_method()
+			newObj.functions.append(function)
+		save_data.objArr.append(newObj)
+	
+	for basket in gameBoard.basketArr:
+		var newBasket = {
+			"label": basket.label,
+			"function": basket.function.get_method(),
+			"params": basket.params
+		}
+		save_data.basketArr.append(newBasket)
+	
+	var file = FileAccess.open(save_file, FileAccess.WRITE)
+	var json_string = JSON.stringify(save_data, "\t")
+	
+	if file:
+		file.store_string(json_string)
+		file.close()
+		print("Saved game data to: ", save_file)
+	else:
+		print("Failed to save file!")
+
+func load_game() -> bool:
+	if not FileAccess.file_exists("user://save_data.json"):
+		print("No save file found.")
+		return false
+	
+	var file = FileAccess.open("user://save_data.json", FileAccess.READ)
+	var json_string = file.get_as_text()
+	file.close()
+	
+	var result = JSON.parse_string(json_string)
+	if result is Dictionary:
+		money = result.money
+		dropCost = result.dropCost
+		gameBoard.inventory = result.inventory
+		turnCount = result.turnCount
+		stage.turnsToNextLevel = result.turnsToNextLevel
+		
+		for obj in result.objArr:
+			gameBoard.add_coll_object(
+				Vector2(obj.position.x, obj.position.y), 
+				collScene, obj.objectName, obj.functions, 
+				Color.html(obj.color),
+				obj.sound
+			)
+		
+		for basket in result.basketArr:
+			gameBoard.add_basket(basket.label, basket.function, basket.params)
+		
+		return true
+	else: return false
+
 func generate_level_text(level: String, characters: Array):
 	var returnText = ""
 	returnText += level + "\n"
@@ -144,10 +273,6 @@ func generate_level_text(level: String, characters: Array):
 	returnText += "\n"
 	returnText += characters[0].get("desc", "No Description")
 	return returnText
-
-func _input(event):
-	if event.is_action_pressed("ui_cancel"):
-		get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
 
 func _on_input_event_left(_viewport: Node, event: InputEvent, _shape_idx: int) -> void:
 	if event.is_action_pressed("left_click"):

@@ -73,12 +73,12 @@ func remove_pegs(pegs: Array) -> bool:
 func add_bumper(pegs: Array) -> bool:
 	if pegs.size() > 0:
 		return false
-	var new_function = {
+	var new_functions = [{
 		"func": "bump_ball",
 		"text": "Bump Ball",
 		"params": {}
-	}
-	var newObj = gameBoard.add_coll_object(global_position, collScene, "Circle Peg", new_function)
+	}]
+	var newObj = gameBoard.add_coll_object(global_position, collScene, "Circle Peg", new_functions)
 	newObj.scale = Vector2(1.5, 1.5)
 	return true
 
@@ -92,13 +92,13 @@ func change_size(pegs: Array) -> bool:
 func add_flipper(pegs: Array) -> bool:
 	if pegs.size() > 0:
 		return false
-	var new_function = {
+	var new_functions = [{
 		"func": "flip",
 		"text": "Flip Ball",
 		"trigger": params.side + "_button",
 		"params": {"direction": params.side}
-	}
-	var newObj = gameBoard.add_coll_object(global_position, collScene, "Flipper", new_function)
+	}]
+	var newObj = gameBoard.add_coll_object(global_position, collScene, "Flipper", new_functions)
 	if params.side == "right":
 		gameBoard.rightButtonTriggers.append(newObj)
 	elif params.side == "left":

@@ -8,8 +8,3 @@ var currScene : Node2D
 func _ready() -> void:
 	currScene = main_menu.instantiate()
 	add_child(currScene)
-
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-	pass

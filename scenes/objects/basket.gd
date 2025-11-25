@@ -1,6 +1,8 @@
 extends Area2D
 
 var entered = false
+
+var gameBoard: GameBoard
 var label: String
 var function: Callable
 var params: Dictionary
@@ -14,4 +16,4 @@ func _on_body_entered(body):
 
 # Basket Functions
 func add_money():
-	params.gameBoard.stage.moneyEarned += params.value
+	gameBoard.stage.moneyEarned += params.value

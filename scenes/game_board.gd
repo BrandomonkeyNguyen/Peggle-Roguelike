@@ -27,14 +27,6 @@ func init_board(init_stage: Stage) -> void:
 		"x": $BoardArea/Shape.shape.size.x,
 		"y": $BoardArea/Shape.shape.size.y * 3 / 4
 	}
-	
-	var newBasket = baskScene.instantiate() # Set up initial Basket
-	basketArr.append(newBasket)
-	newBasket.label = "Gain $10"
-	newBasket.function = Callable(newBasket, "add_money")
-	newBasket.params = {"gameBoard": self, "value": 10}
-	add_child(newBasket)
-	newBasket.position = Vector2(gameplay_viewport.left,1080)
 
 func handle_gameplay():
 	if ball.is_dropped: # Handle ball after it is dropped
@@ -69,23 +61,39 @@ func add_ball():
 	ball = ballScene.instantiate()
 	add_child(ball)
 
-func add_coll_object(objPosition, scene, shape, function: Dictionary = {}):
+func add_basket(label, function, params):
+	var newBasket = baskScene.instantiate() # Set up initial Basket
+	basketArr.append(newBasket)
+	newBasket.gameBoard = self
+	newBasket.label = label
+	newBasket.function = Callable(newBasket, function)
+	newBasket.params = params
+	add_child(newBasket)
+	newBasket.position = Vector2(gameplay_viewport.left,1080)
+
+func add_coll_object(objPosition, scene, shape, newFunctions: Array = [], color: Color = Color.RED, sound: String = "boingSound"):
 	var newObj = scene.instantiate()
 	objArr.append(newObj)
 	add_child(newObj)
 	newObj.global_position = objPosition
 	newObj.set_object(shape)
+	newObj.set_color(color)
+	newObj.sound = newObj.get_node(sound)
 	newObj.mainScene = self
-	if function != {}:
-		var callableFunc = Callable(newObj, function["func"])
-		function.func = callableFunc
-		if function.has("trigger"):
-			newObj.triggeredFunctions.append(function)
-		else:
-			newObj.functions.append(function)
+	if newFunctions != []:
+		for function in newFunctions:
+			var callableFunc = Callable(newObj, function["func"])
+			function.func = callableFunc
+			if function.has("trigger"):
+				newObj.triggeredFunctions.append(function)
+			else:
+				newObj.functions.append(function)
 	return newObj
 
 func handle_selecting() -> bool:
+	if selector == null:
+		add_ball()
+		return false
 	if selector.area_selected:
 		if selector.pegs_to_remove != null:
 			for peg in selector.pegs_to_remove:

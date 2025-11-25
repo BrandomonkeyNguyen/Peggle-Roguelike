@@ -4,12 +4,14 @@ class_name CollisionObject
 const circlePegScene = preload("res://scenes/objects/collisionObjects/circlePeg.tscn")
 const flipperScene = preload("res://scenes/objects/collisionObjects/flipper.tscn")
 const pop_up = preload("res://scenes/objects/number_pop_up.tscn")
+
 var mainScene: Node2D
 var anim: AnimationPlayer
 var sound: AudioStreamPlayer
 var functions := []
 var triggeredFunctions := []
 var object: Node2D
+var objectName: String
 var time_touched = 0
 var pop_up_arr = []
 
@@ -40,6 +42,7 @@ func _on_mouse_exited():
 		$Animate.play("offHover")
 
 func set_object(obj):
+	objectName = obj
 	if obj == "Circle Peg":
 		object = circlePegScene.instantiate()
 		object.color = Color.RED
@@ -108,7 +111,7 @@ func elephant(_params: Dictionary = {}):
 			var new_pos = peg.global_position + (direction * 5)
 			var tween := get_tree().create_tween()
 			tween.tween_property(peg, "global_position", new_pos, 0.15)
-
+	
 	mainScene.ball.linear_velocity = mainScene.ball.linear_velocity.normalized() * 500
 
 func random_monkey_effect():

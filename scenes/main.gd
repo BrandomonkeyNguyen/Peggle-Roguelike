@@ -243,27 +243,29 @@ func load_game() -> bool:
 	var json_string = file.get_as_text()
 	file.close()
 	
-	var result = JSON.parse_string(json_string)
-	if result is Dictionary:
-		money = result.money
-		dropCost = result.dropCost
-		gameBoard.inventory = result.inventory
-		turnCount = result.turnCount
-		stage.turnsToNextLevel = result.turnsToNextLevel
-		
-		for obj in result.objArr:
-			gameBoard.add_coll_object(
-				Vector2(obj.position.x, obj.position.y), 
-				collScene, obj.objectName, obj.functions, 
-				Color.html(obj.color),
-				obj.sound
-			)
-		
-		for basket in result.basketArr:
-			gameBoard.add_basket(basket.label, basket.function, basket.params)
-		
-		return true
-	else: return false
+	if not json_string == "":
+		var result = JSON.parse_string(json_string)
+		if result is Dictionary:
+			money = result.money
+			dropCost = result.dropCost
+			gameBoard.inventory = result.inventory
+			turnCount = result.turnCount
+			stage.turnsToNextLevel = result.turnsToNextLevel
+			
+			for obj in result.objArr:
+				gameBoard.add_coll_object(
+					Vector2(obj.position.x, obj.position.y), 
+					collScene, obj.objectName, obj.functions, 
+					Color.html(obj.color),
+					obj.sound
+				)
+			
+			for basket in result.basketArr:
+				gameBoard.add_basket(basket.label, basket.function, basket.params)
+			
+			return true
+	
+	return false
 
 func generate_level_text(level: String, characters: Array):
 	var returnText = ""

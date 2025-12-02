@@ -27,7 +27,8 @@ static func get_viewport_size(gameBoard):
 
 
 # Set Pegs Functions
-static func set_grid(gameBoard):
+static func set_grid(mainNode: Main):
+	var gameBoard = mainNode.gameBoard
 	var viewport = get_viewport_size(gameBoard)
 	var i = -4.5
 	while i < 5:
@@ -39,7 +40,8 @@ static func set_grid(gameBoard):
 			j += 1
 		i += 1
 
-static func set_grid_offset(gameBoard):
+static func set_grid_offset(mainNode: Main):
+	var gameBoard = mainNode.gameBoard
 	var viewport = get_viewport_size(gameBoard)
 	var i = -4.5
 	while i < 5:
@@ -55,7 +57,8 @@ static func set_grid_offset(gameBoard):
 			j += 1
 		i += 1
 
-static func set_circles(gameBoard):
+static func set_circles(mainNode: Main):
+	var gameBoard = mainNode.gameBoard
 	var viewport = get_viewport_size(gameBoard)
 	for i in range(1,21):
 		for j in range(1,6):
@@ -63,7 +66,8 @@ static func set_circles(gameBoard):
 			var y = sin(2 * PI / 20 * i) * (viewport.y / 10 * j) + (viewport.y/2 + viewport.top)
 			gameBoard.add_coll_object(Vector2(x,y), collScene, "Circle Peg")
 
-static func set_triangles(gameBoard):
+static func set_triangles(mainNode: Main):
+	var gameBoard = mainNode.gameBoard
 	var viewport = get_viewport_size(gameBoard)
 	var base_width = viewport.x  # Width of the widest (last) row
 	var center_x = viewport.left + viewport.x / 2
@@ -80,7 +84,8 @@ static func set_triangles(gameBoard):
 			gameBoard.add_coll_object(Vector2(x, y), collScene, "Circle Peg")
 
 
-static func set_tapered(gameBoard):
+static func set_tapered(mainNode: Main):
+	var gameBoard = mainNode.gameBoard
 	var viewport = get_viewport_size(gameBoard)
 	var center_x = viewport.x / 2 + viewport.left
 	var start_y = viewport.top + viewport.y

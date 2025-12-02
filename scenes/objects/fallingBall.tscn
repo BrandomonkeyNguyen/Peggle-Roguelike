@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://btrnd8ngxcq3r"]
 
-[ext_resource type="Script" path="res://scenes/objects/fallingBall.gd" id="1_rq7xo"]
+[ext_resource type="Script" uid="uid://pud6wavcxxtt" path="res://scenes/objects/fallingBall.gd" id="1_rq7xo"]
 [ext_resource type="Texture2D" uid="uid://d2wcpu7rma4sv" path="res://assets/sprites/ball.png" id="4_las8s"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_pwyj7"]

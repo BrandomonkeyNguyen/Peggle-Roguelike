@@ -192,13 +192,5 @@ position = Vector2(648, 1072)
 position = Vector2(312, -4)
 shape = SubResource("RectangleShape2D_tbgi4")
 
-[node name="Resetter2" type="Area2D" parent="."]
-position = Vector2(648, 1072)
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Resetter2"]
-position = Vector2(312, -4)
-shape = SubResource("RectangleShape2D_tbgi4")
-
 [connection signal="input_event" from="ButtonRight/Area2D" to="." method="_on_input_event_right"]
 [connection signal="input_event" from="ButtonLeft/Area2D" to="." method="_on_input_event_left"]
-[connection signal="body_entered" from="Resetter" to="." method="_on_resetter_body_entered"]

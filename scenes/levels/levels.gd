@@ -10,8 +10,11 @@ static var level_order = JSON.parse_string(level_order_json)
 
 static var levelStageCounterMax = 3
 
-static func level_handler(gameBoard, handleType):
-	LevelHelper.level_handler(gameBoard, handleType)
+static func level_handler(mainNode: Main, handleType):
+	for character in mainNode.stage.levelCharacters:
+		if character.has(handleType):
+			var newFunction = Callable(LevelHelper,character[handleType])
+			newFunction.call(mainNode)
 
 static func get_level():
 	if level_order.size() > 0:
@@ -47,7 +50,8 @@ static func load_level(menu, music):
 	menu.set_options(options)
 	return options
 
-static func progress_level(gameBoard, params):
+static func progress_level(mainNode: Main, params):
+	var gameBoard = mainNode.gameBoard
 	params.music.set_music(gameBoard.stage.levelStatus)
 	params.music.play()
-	LevelHelper.level_handler(gameBoard, "before_dropping")
+	level_handler(mainNode, "level_start")

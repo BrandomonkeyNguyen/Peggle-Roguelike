@@ -12,7 +12,8 @@ var basketArr: Array
 var inventory: Array
 var selector: Area2D
 
-var gameplay_viewport: Dictionary # Game Variables
+# Game Variables
+var gameplay_viewport: Dictionary
 var stage: Stage
 var state: Dictionary
 
@@ -20,7 +21,6 @@ var gameOver: bool
 
 func init_board(init_stage: Stage) -> void:
 	stage = init_stage
-	
 	gameplay_viewport = { # Set gameplay viewport variable
 		"top": $BoardArea/Shape.shape.size.y / 8,
 		"left": $BoardArea/Shape.position.x - ($BoardArea/Shape.shape.size.x / 2),
@@ -38,7 +38,7 @@ func handle_gameplay():
 			ball.last_touched.free()
 			ball.impulse_factor = 1
 		stage.moneyEarned = ball.money_gathered
-		Levels.level_handler(self, "during_drop")
+		
 	else: # Handle ball during drop input sequence
 		var ball_posx = get_global_mouse_position().x
 		if get_global_mouse_position().x + ball.get_radius() < gameplay_viewport.left:
@@ -46,16 +46,6 @@ func handle_gameplay():
 		elif get_global_mouse_position().x > gameplay_viewport.left + gameplay_viewport.x - ball.get_radius():
 			ball_posx = gameplay_viewport.left + gameplay_viewport.x - ball.get_radius()
 		ball.position = Vector2(ball_posx, 100)
-
-func _on_resetter_body_entered(body):
-	if body.is_in_group("ball"): # Ensure a ball has entered basket
-		for basket in basketArr: # Handle Basket functions
-			if basket.entered:
-				basket.function.call()
-				basket.entered = false
-		Levels.level_handler(self, "after_landing")
-		stage.stageEnd = true
-		body.free() # Free ball
 
 func add_ball():
 	ball = ballScene.instantiate()
@@ -74,7 +64,7 @@ func add_basket(label, function, params):
 func add_coll_object(objPosition, scene, shape, newFunctions: Array = [], color: Color = Color.RED, sound: String = "boingSound"):
 	var newObj = scene.instantiate()
 	objArr.append(newObj)
-	add_child(newObj)
+	call_deferred("add_child", newObj)
 	newObj.global_position = objPosition
 	newObj.set_object(shape)
 	newObj.set_color(color)

@@ -8,6 +8,7 @@ var last_position_stuck: Vector2
 var impulse_factor = 1
 var last_touched: StaticBody2D
 var all_touched: Array
+var unknown_touches: Array
 var is_dropped = false
 var time_dropped = null
 var money_gathered = 0
@@ -56,7 +57,11 @@ func _on_body_entered(body):
 		last_touched = body
 		if body not in all_touched:
 			all_touched.append(body)
+	elif not body.is_in_group("coll_objects") and body not in unknown_touches:
+		unknown_touches.append(body)
 
+func modulate(new_color: Color):
+	$Sprite2D.modulate = new_color
 
 func get_radius():
 	return $ballShape.shape.radius

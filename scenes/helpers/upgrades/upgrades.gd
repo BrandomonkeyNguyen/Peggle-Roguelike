@@ -45,30 +45,30 @@ static func select(gameBoard: GameBoard, function: String, params: Dictionary, s
 	gameBoard.selector = selector
 
 # Upgrade Functions
-static func add_value(gameBoard: GameBoard, params: Dictionary = {}):
+static func add_value(mainNode: Main, params: Dictionary = {}):
 	var shape = make_shape(params.shape, params.scale)
 	if shape:
-		select(gameBoard, "add_money", {"value": params.value}, shape)
+		select(mainNode.gameBoard, "add_money", {"value": params.value}, shape)
 
-static func remove(gameBoard: GameBoard, params: Dictionary = {}):
+static func remove(mainNode: Main, params: Dictionary = {}):
 	var shape = make_shape(params.shape, params.scale)
 	if shape:
-		select(gameBoard, "remove_pegs", {}, shape)
+		select(mainNode.gameBoard, "remove_pegs", {}, shape)
 
-static func add_bumper(gameBoard: GameBoard, params: Dictionary = {}):
+static func add_bumper(mainNode: Main, params: Dictionary = {}):
 	var shape = make_shape(params.shape, params.scale)
 	if shape:
-		select(gameBoard, "add_bumper", {}, shape)
+		select(mainNode.gameBoard, "add_bumper", {}, shape)
 
-static func silver_bullet(gameBoard: GameBoard, _params: Dictionary = {}):
-	gameBoard.inventory.append("Silver Bullet")
+static func silver_bullet(mainNode: Main, _params: Dictionary = {}):
+	mainNode.gameBoard.inventory.append("Silver Bullet")
 
-static func change_size(gameBoard: GameBoard, params: Dictionary = {}):
+static func change_size(mainNode: Main, params: Dictionary = {}):
 	var shape = make_shape(params.shape, params.scale)
 	if shape:
-		select(gameBoard, "change_size", {"value": params.value}, shape)
+		select(mainNode.gameBoard, "change_size", {"value": params.value}, shape)
 
-static func add_flipper(gameBoard: GameBoard, params: Dictionary = {}):
+static func add_flipper(mainNode: Main, params: Dictionary = {}):
 	var shape = make_shape(params.shape, params.scale)
 	if shape:
-		select(gameBoard, "add_flipper", {"side": params.side}, shape)
+		select(mainNode.gameBoard, "add_flipper", {"side": params.side}, shape)

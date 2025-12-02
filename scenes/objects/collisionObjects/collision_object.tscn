@@ -1,6 +1,6 @@
 [gd_scene load_steps=10 format=3 uid="uid://dhm6w4eqc8l6t"]
 
-[ext_resource type="Script" path="res://scenes/objects/collisionObjects/collision_object.gd" id="1_5kn5v"]
+[ext_resource type="Script" uid="uid://cu4ehmmmt2hr0" path="res://scenes/objects/collisionObjects/collision_object.gd" id="1_5kn5v"]
 [ext_resource type="Texture2D" uid="uid://c7vuxscm3j5rx" path="res://assets/sprites/steelTexture.webp" id="2_e0x5f"]
 [ext_resource type="AudioStream" uid="uid://cd7wg2c5paibq" path="res://assets/audio/8bitEffects/bounce.mp3" id="3_iad4h"]
 [ext_resource type="AudioStream" uid="uid://fis17daar526" path="res://assets/audio/8bitEffects/gainMoney.mp3" id="4_8b76u"]
@@ -42,8 +42,8 @@ tracks/0/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_ugl75"]
 _data = {
-"offHover": SubResource("Animation_jfv6c"),
-"onHover": SubResource("Animation_u0cwi")
+&"offHover": SubResource("Animation_jfv6c"),
+&"onHover": SubResource("Animation_u0cwi")
 }
 
 [sub_resource type="LabelSettings" id="LabelSettings_735bh"]
@@ -59,7 +59,7 @@ shape = SubResource("CircleShape2D_d386m")
 
 [node name="Animate" type="AnimationPlayer" parent="."]
 libraries = {
-"": SubResource("AnimationLibrary_ugl75")
+&"": SubResource("AnimationLibrary_ugl75")
 }
 
 [node name="HoverBox" type="Sprite2D" parent="."]

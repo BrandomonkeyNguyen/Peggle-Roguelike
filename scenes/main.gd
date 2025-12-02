@@ -23,7 +23,7 @@ var currentOptions: Array
 var selecting = false
 
 var music: AudioStreamPlayer
-var state: Dictionary
+var levelState: Dictionary
 
 var gameOver = false
 
@@ -67,29 +67,29 @@ func _process(_delta):
 			inventoryText += "* " + item + "\n"
 		$Inventory.text = inventoryText
 		
-		if gameBoard.selector and selecting == true: # Handle if player is using selector
+		if selecting == true: # Handle if player is using selector
 			selecting = gameBoard.handle_selecting()
 		
 		elif menuOpen: # Handle if player is using menu
 			if menu.selected != -1:
-				gameBoard.add_ball()
 				if currentOptions[menu.selected]["func"].is_valid():
 					if "params" in currentOptions[menu.selected]:
-						currentOptions[menu.selected]["func"].call(gameBoard, currentOptions[menu.selected]["params"])
+						currentOptions[menu.selected]["func"].call(self, currentOptions[menu.selected]["params"])
 					else:
-						currentOptions[menu.selected]["func"].call(gameBoard)
+						currentOptions[menu.selected]["func"].call(self)
 				if menu.function.is_valid():
 					menu.function.call()
 				menu.free()
 				menuOpen = false
 				selecting = true
 		
-		else: # Handle if game is in play\
+		else: # Handle if game is in play
 			if stage.ballDropped: # Handle if ball was just dropped
 				if money >= dropCost:
 					money -= dropCost
 					dropCost *= 2
 				stage.ballDropped = false
+				Levels.level_handler(self, "on_drop")
 			
 			if stage.stageEnd: # Handle if ball has reached the bottom
 				money += stage.moneyEarned
@@ -131,22 +131,33 @@ func _process(_delta):
 					stage = newStage
 					gameBoard.stage = newStage
 					
-					Levels.level_handler(gameBoard, "level_start")
-					
 					call_deferred("add_child", menu)
 					menuOpen = true
 				
 			elif gameBoard.ball: # Handle if ball is still in play
-				gameBoard.handle_gameplay() 
+				gameBoard.handle_gameplay()
+				Levels.level_handler(self, "during_drop")
+
+func _on_resetter_body_entered(body):
+	if body == gameBoard.ball and not gameOver: # Ensure the ball has entered basket
+		for basket in gameBoard.basketArr: # Handle Basket functions
+			if basket.entered:
+				basket.function.call()
+				basket.entered = false
+		stage.stageEnd = true
+		body.free() # Free ball
+		Levels.level_handler(self, "after_landing")
+		save_game()
+	elif body.is_in_group("ball"):
+		body.free()
 
 func _input(event):
 	if event.is_action_pressed("ui_cancel"):
-		save_game()
 		get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
 
 func do_game_over():
 	var file = FileAccess.open("user://save_data.json", FileAccess.WRITE) # Empty out save file
-	file.store_string("") 
+	file.store_string("{}") 
 	file.close()
 	
 	music.stop_all()
@@ -157,6 +168,11 @@ func play_sound(path: String):
 	var sound_stream = load(path)
 	$SoundPlayer.stream = sound_stream
 	$SoundPlayer.play()
+
+func add_game_board(new_stage):
+	gameBoard = boardScene.instantiate() # Instantiate game board, music, and menu
+	gameBoard.init_board(new_stage) # Initialize variables
+	call_deferred("add_child", gameBoard) # Add game board, music, and menu as children
 
 func save_high_scores():
 	var high_score_file = "user://high_scores.json"
@@ -172,7 +188,7 @@ func save_high_scores():
 		
 		result = JSON.parse_string(read_json_string)
 		
-		if result is Dictionary:
+		if result is Dictionary and "money" in result and "turnCount" in result:
 			if result.money < money:
 				result.money = money
 			if result.turnCount < turnCount:
@@ -212,8 +228,12 @@ func save_game():
 			"functions": []
 		}
 		for function in obj.functions:
-			function.func = function.func.get_method()
-			newObj.functions.append(function)
+			var saveFunc = {
+				"func": function.func.get_method(),
+				"text": function.text,
+				"params": function.params
+			}
+			newObj.functions.append(saveFunc)
 		save_data.objArr.append(newObj)
 	
 	for basket in gameBoard.basketArr:
@@ -234,7 +254,7 @@ func save_game():
 	else:
 		print("Failed to save file!")
 
-func load_game() -> bool:
+func load_game(boardOnly: bool = false) -> bool:
 	if not FileAccess.file_exists("user://save_data.json"):
 		print("No save file found.")
 		return false
@@ -246,11 +266,12 @@ func load_game() -> bool:
 	if not json_string == "":
 		var result = JSON.parse_string(json_string)
 		if result is Dictionary:
-			money = result.money
-			dropCost = result.dropCost
-			gameBoard.inventory = result.inventory
-			turnCount = result.turnCount
-			stage.turnsToNextLevel = result.turnsToNextLevel
+			if not boardOnly:
+				money = result.money
+				dropCost = result.dropCost
+				gameBoard.inventory = result.inventory
+				turnCount = result.turnCount
+				stage.turnsToNextLevel = result.turnsToNextLevel
 			
 			for obj in result.objArr:
 				gameBoard.add_coll_object(

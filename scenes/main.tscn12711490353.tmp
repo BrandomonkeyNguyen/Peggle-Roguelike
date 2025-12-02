@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://cwdubov25slj5"]
+[gd_scene load_steps=13 format=3 uid="uid://cwdubov25slj5"]
 
 [ext_resource type="Script" uid="uid://cpqt06objp3w0" path="res://scenes/main.gd" id="1_wsmuf"]
 [ext_resource type="AudioStream" uid="uid://blgcborusdy58" path="res://assets/audio/Hooray Sound Effect.mp3" id="2_xft5e"]
@@ -28,9 +28,6 @@ font_size = 36
 font_size = 60
 font_color = Color(1, 0, 0, 1)
 outline_size = 25
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_tbgi4"]
-size = Vector2(1080, 24)
 
 [node name="Node2D" type="Node2D"]
 script = ExtResource("1_wsmuf")
@@ -185,20 +182,5 @@ label_settings = SubResource("LabelSettings_03flg")
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Resetter" type="Area2D" parent="."]
-position = Vector2(648, 1072)
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Resetter"]
-position = Vector2(312, -4)
-shape = SubResource("RectangleShape2D_tbgi4")
-
-[node name="Resetter2" type="Area2D" parent="."]
-position = Vector2(648, 1072)
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Resetter2"]
-position = Vector2(312, -4)
-shape = SubResource("RectangleShape2D_tbgi4")
-
 [connection signal="input_event" from="ButtonRight/Area2D" to="." method="_on_input_event_right"]
 [connection signal="input_event" from="ButtonLeft/Area2D" to="." method="_on_input_event_left"]
-[connection signal="body_entered" from="Resetter" to="." method="_on_resetter_body_entered"]
